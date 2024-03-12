@@ -1,0 +1,3 @@
+[submodule "libdarts"]
+	path = darts-clone-sys/libdarts
+	url = https://github.com/BYVoid/libdarts
