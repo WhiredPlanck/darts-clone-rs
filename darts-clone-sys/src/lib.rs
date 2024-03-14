@@ -113,3 +113,15 @@ extern "C" {
         length: size_t,
     ) -> DartsValueType;
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn is_works() {
+        let dic = unsafe { darts_new() };
+        assert_ne!(dic, std::ptr::null_mut());
+        unsafe { darts_delete(dic); }
+    }
+}
