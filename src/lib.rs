@@ -16,6 +16,23 @@ pub mod darts {
         pub length: usize,
     }
 
+    pub type Progress = dyn FnMut(usize, usize) -> i32;
+
+    pub struct BuildCallbacks {
+        progress: Option<Box<Progress>>
+    }
+
+    impl BuildCallbacks {
+        pub fn new() -> BuildCallbacks {
+            BuildCallbacks { progress: None }
+        }
+
+        pub fn progress<F: FnMut(usize, usize) -> i32 + 'static>(&mut self, f: F) -> &mut BuildCallbacks {
+            self.progress = Some(Box::new(f) as Box<Progress>);
+            self
+        }
+    }
+
     impl DoubleArrayTrie {
         pub fn new() -> DoubleArrayTrie {
             DoubleArrayTrie { darts_t: unsafe { raw::darts_new() } }
@@ -49,7 +66,7 @@ pub mod darts {
             unsafe { raw::darts_nonzero_size(self.darts_t) }
         }
 
-        pub fn build(&self, num_keys: usize, keys: &Vec<String>, lengths: Option<&[usize]>, values: Option<&[i32]>) -> Result<(), &str> {
+        pub fn build(&self, num_keys: usize, keys: &Vec<String>, lengths: Option<&[usize]>, values: Option<&[i32]>, callbacks: BuildCallbacks) -> Result<(), &str> {
             let c_keys = keys.iter().map(|key| {
                 let c_key = CString::new(key.as_str()).unwrap();
                 c_key.as_ptr()
@@ -65,15 +82,25 @@ pub mod darts {
                 None => ptr::null()
             };
 
+            static mut STORED_PROGRESS: Option<Box<Progress>> = None;
+
             unsafe {
-                // HELP-WANTED: implement progress_func
-                let retval = raw::darts_build(self.darts_t, num_keys, c_keys, c_lengths, c_values, None);
+                STORED_PROGRESS = callbacks.progress;
+                let retval = raw::darts_build(self.darts_t, num_keys, c_keys, c_lengths, c_values, Some(progress_callback));
                 if retval != 0 {
                     let err = CStr::from_ptr(raw::darts_error(self.darts_t));
                     return Err(err.to_str().unwrap());
                 }
-                Ok(())
             }
+
+            unsafe extern "C" fn progress_callback(current: usize, totols: usize) -> i32 {
+                match STORED_PROGRESS {
+                    Some(ref mut f) => f(current, totols),
+                    None => 0
+                }
+            }
+
+            Ok(())
         }
 
         pub fn open(&self, file_name: &str, mode: &str, offset: usize, size: usize) -> Result<(), &str> {
