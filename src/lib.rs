@@ -1,7 +1,7 @@
 pub mod darts {
     use std::{ffi::{c_void, CStr, CString}, ptr};
 
-    use darts_clone_sys as raw;
+    use libdarts_sys as raw;
 
     pub struct DoubleArrayTrie {
         darts_t: raw::DartsT

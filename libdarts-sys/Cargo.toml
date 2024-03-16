@@ -1,5 +1,5 @@
 [package]
-name = "darts-clone-sys"
+name = "libdarts-sys"
 version = "0.1.0"
 edition = "2021"
 links = "darts"
