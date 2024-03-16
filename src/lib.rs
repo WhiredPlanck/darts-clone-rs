@@ -8,7 +8,13 @@ pub mod darts {
     }
 
     pub struct Array {
-        array: *const c_void
+        array: *const c_void,
+    }
+
+    impl Array {
+        pub fn new() -> Array {
+            Array { array: ptr::null_mut() }
+        }
     }
 
     pub struct ResultPairType {
