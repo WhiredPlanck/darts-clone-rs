@@ -176,7 +176,10 @@ pub mod darts {
 
     impl Drop for DoubleArrayTrie {
         fn drop(&mut self) {
-            unsafe { raw::darts_delete(self.darts_t); }
+            unsafe {
+                raw::darts_clear(self.darts_t);
+                raw::darts_delete(self.darts_t);
+            }
         }
     }
 }
