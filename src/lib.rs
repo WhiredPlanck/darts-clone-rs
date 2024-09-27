@@ -24,21 +24,6 @@ pub mod darts {
 
     pub type Progress = dyn FnMut(usize, usize) -> i32;
 
-    pub struct BuildCallbacks {
-        progress: Option<Box<Progress>>
-    }
-
-    impl BuildCallbacks {
-        pub fn new() -> BuildCallbacks {
-            BuildCallbacks { progress: None }
-        }
-
-        pub fn progress<F: FnMut(usize, usize) -> i32 + 'static>(&mut self, f: F) -> &mut BuildCallbacks {
-            self.progress = Some(Box::new(f) as Box<Progress>);
-            self
-        }
-    }
-
     impl DoubleArrayTrie {
         pub fn new() -> DoubleArrayTrie {
             DoubleArrayTrie { darts_t: unsafe { raw::darts_new() } }
@@ -72,7 +57,7 @@ pub mod darts {
             unsafe { raw::darts_nonzero_size(self.darts_t) }
         }
 
-        pub fn build(&self, num_keys: usize, keys: &Vec<String>, lengths: Option<&[usize]>, values: Option<&[i32]>, callbacks: BuildCallbacks) -> Result<(), &str> {
+        pub fn build(&self, num_keys: usize, keys: &Vec<String>, lengths: Option<&[usize]>, values: Option<&[i32]>, progress_func: Option<Box<Progress>>) -> Result<(), &str> {
             let c_keys = keys.iter().map(|key| {
                 let c_key = CString::new(key.as_str()).unwrap();
                 c_key.as_ptr()
@@ -91,7 +76,7 @@ pub mod darts {
             static mut STORED_PROGRESS: Option<Box<Progress>> = None;
 
             unsafe {
-                STORED_PROGRESS = callbacks.progress;
+                STORED_PROGRESS = progress_func;
                 let retval = raw::darts_build(self.darts_t, num_keys, c_keys, c_lengths, c_values, Some(progress_callback));
                 if retval != 0 {
                     let err = CStr::from_ptr(raw::darts_error(self.darts_t));
@@ -183,3 +168,6 @@ pub mod darts {
         }
     }
 }
+
+#[cfg(test)]
+mod tests;
