@@ -150,8 +150,8 @@ extern "C" {
 
     /// Searches for keys which match a prefix of the
     /// given string. If `length` is 0, `key` is handled as a zero-terminated string.
-    /// The values and the lengths of at most `max_num_results' matched keys are
-    /// stored in `results'. Returns the number of matched
+    /// The values and the lengths of at most `max_num_results` matched keys are
+    /// stored in `results`. Returns the number of matched
     /// keys. Note that the return value can be larger than `max_num_results` if
     /// there are more than `max_num_results` matches. If you want to get all the
     /// results, allocate more spaces and call this again.
