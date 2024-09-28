@@ -1,6 +1,6 @@
 [package]
 name = "darts-clone-rs"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Rust binding of a clone of Darts (Double-ARray Trie System)"
 license = "BSD-3-Clause"
@@ -11,7 +11,7 @@ documentation = "https://docs.rs/darts-clone-rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-libdarts-sys = { path = "libdarts-sys", version = "0.1.0" }
+libdarts-sys = { path = "libdarts-sys", version = "0.1" }
 
 [dev-dependencies]
 rand = "0.8"
