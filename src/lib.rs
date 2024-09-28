@@ -17,6 +17,7 @@ pub mod darts {
         }
     }
 
+    #[derive(Debug, PartialEq)]
     pub struct ResultPairType {
         pub value: i32,
         pub length: usize,
@@ -58,18 +59,23 @@ pub mod darts {
         }
 
         pub fn build(&self, num_keys: usize, keys: &Vec<String>, lengths: Option<&[usize]>, values: Option<&[i32]>, progress_func: Option<Box<Progress>>) -> Result<(), &str> {
-            let c_keys = keys.iter().map(|key| {
-                let c_key = CString::new(key.as_str()).unwrap();
-                c_key.as_ptr()
-            }).collect::<Vec<_>>().as_ptr();
+            let keys = keys.iter()
+                .map(|key| CString::new(key.as_bytes()).unwrap())
+                .collect::<Vec<_>>();
+
+            let mut c_keys: Vec<*const std::os::raw::c_char> = Vec::with_capacity(num_keys + 1);
+            for key in &keys {
+                c_keys.push(key.as_ptr() as *const std::os::raw::c_char);
+            }
+            c_keys.push(ptr::null());
 
             let c_lengths = match lengths {
-                Some(lengths) => lengths.as_ptr(),
+                Some(lengths) => &lengths[0],
                 None => ptr::null()
             };
 
             let c_values = match values {
-                Some(values) => values.as_ptr(),
+                Some(values) => &values[0],
                 None => ptr::null()
             };
 
@@ -77,7 +83,7 @@ pub mod darts {
 
             unsafe {
                 STORED_PROGRESS = progress_func;
-                let retval = raw::darts_build(self.darts_t, num_keys, c_keys, c_lengths, c_values, Some(progress_callback));
+                let retval = raw::darts_build(self.darts_t, num_keys, &c_keys[0], c_lengths, c_values, Some(progress_callback));
                 if retval != 0 {
                     let err = CStr::from_ptr(raw::darts_error(self.darts_t));
                     return Err(err.to_str().unwrap());
@@ -136,14 +142,16 @@ pub mod darts {
             }
         }
 
-        pub fn common_prefix_search(&self, key: &str, results: &mut ResultPairType, max_num_results: usize, length: usize, node_pos: usize) -> usize {
+        pub fn common_prefix_search(&self, key: &str, max_num_results: usize, length: usize, node_pos: usize) -> Vec<ResultPairType> {
             let c_key = CString::new(key).unwrap();
+            let mut raw_results = Vec::with_capacity(max_num_results);
             unsafe {
-                let raw_results = ptr::null_mut();
-                let result = raw::darts_common_prefix_search(self.darts_t, c_key.as_ptr(), raw_results, max_num_results, length, node_pos);
-                results.value = (*raw_results).value;
-                results.length = (*raw_results).length;
-                result
+                let num = raw::darts_common_prefix_search(self.darts_t, c_key.as_ptr(), raw_results.as_mut_ptr(), max_num_results, length, node_pos);
+                raw_results.set_len(num);
+                let results = raw_results
+                    .iter().map(|result| ResultPairType { value: result.value, length: result.length })
+                    .collect();
+                results
             }
         }
 
