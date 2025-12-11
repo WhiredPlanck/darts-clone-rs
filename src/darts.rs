@@ -286,6 +286,50 @@ impl DoubleArrayTrie {
         }
     }
 
+    /// Searches for the longest key which matches a prefix of the given string,
+    /// and if it exists, its value and length are set to `result`. Otherwise, 
+    /// the value and the length of `result` are set to -1 and 0 respectively.
+    /// Note that if `length` is 0, `key` is handled as a zero-terminated string.
+    /// `node_pos` works as well as in [`exact_match_search`].
+    pub fn common_longest_prefix_search(
+        &self,
+        key: &str,
+        length: usize,
+        node_pos: usize,
+    ) -> i32 {
+        let c_key = CString::new(key).unwrap();
+        unsafe {
+            raw::darts_common_longest_prefix_search(
+                self.darts_t,
+                c_key.as_ptr(),
+                length,
+                node_pos,
+            )
+        }
+    }
+
+    /// [`common_longest_prefix_search`] but returns a [`ResultPairType`] instead.
+    pub fn common_longest_prefix_search_pair(
+        &self,
+        key: &str,
+        length: usize,
+        node_pos: usize,
+    ) -> ResultPairType {
+        let c_key = CString::new(key).unwrap();
+        unsafe {
+            let result = raw::darts_common_longest_prefix_search_pair(
+                self.darts_t,
+                c_key.as_ptr(),
+                length,
+                node_pos,
+            );
+            ResultPairType {
+                value: result.value,
+                length: result.length,
+            }
+        }
+    }
+
     /// In Darts-clone, a dictionary is a deterministic finite-state automaton
     /// (DFA) and this function tests transitions on the DFA. The initial state is
     /// `node_pos` and this chooses transitions labeled `key[key_pos]`,

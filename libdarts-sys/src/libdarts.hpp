@@ -202,6 +202,26 @@ size_t darts_common_prefix_search(const darts_t darts,
                                   size_t max_num_results,
                                   size_t length,
                                   size_t node_pos);
+/**
+ darts_common_longest_prefix_search() searches for the longest key which
+ matches a prefix of the given string, and if it exists, its value and
+ length are set to `result'. Otherwise, the value and the length of
+ `result' are set to -1 and 0 respectively. Note that if `length' is 0,
+ `key' is handled as a zero-terminated string. `node_pos' works as well as
+ in darts_exact_match_search().
+*/
+darts_value_type darts_common_longest_prefix_search(const darts_t darts,
+                                                    const darts_key_type* key,
+                                                    size_t length,
+                                                    size_t node_pos);
+
+/**
+ darts_common_longest_prefix_search_pair() returns a darts_result_pair instead.
+*/                                                    
+darts_result_pair_type darts_common_longest_prefix_search_pair(const darts_t darts,
+                                                               const darts_key_type* key,
+                                                               size_t length,
+                                                               size_t node_pos);
 
 /**
  In Darts-clone, a dictionary is a deterministic finite-state automaton

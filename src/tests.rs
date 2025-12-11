@@ -259,6 +259,61 @@ fn common_prefix_search() {
 }
 
 #[test]
+fn common_longest_prefix_search() {
+    let data = TestData::new();
+    let TestData { dic, invalid_keys, keys, lengths, .. } = &data;
+    let random = data.random_value();
+
+    match dic.build(keys.len(), &keys, Some(&lengths), Some(&random), None) {
+        Ok(_) => {
+            let mut value: i32;
+            let mut result: ResultPairType;
+
+            for (i, key) in keys.iter().enumerate() {
+                value = dic.common_longest_prefix_search(key, 0, 0);
+                assert_eq!(value, random[i]);
+
+                result = dic.common_longest_prefix_search_pair(key, 0, 0);
+                assert_eq!(result.value, random[i]);
+                assert_eq!(result.length, lengths[i]);
+
+                value = dic.common_longest_prefix_search(key, lengths[i], 0);
+                assert_eq!(value, random[i]);
+
+                result = dic.common_longest_prefix_search_pair(key, lengths[i], 0);
+                assert_eq!(result.value, random[i]);
+                assert_eq!(result.length, lengths[i]);
+
+                if lengths[i] > 1 {
+                    let results = dic.common_prefix_search(key, MAX_NUM_RESULTS, 0, 0);
+                    let num_results = results.len();
+                    assert!(num_results >= 1);
+
+                    result = dic.common_longest_prefix_search_pair(key, lengths[i] - 1, 0);
+                    if num_results >= 2 {
+                        assert_eq!(result.value, results[num_results - 2].value);
+                        assert_eq!(result.length, results[num_results - 2].length);
+                    } else {
+                        assert_eq!(result.value, -1);
+                        assert_eq!(result.length, 0);
+                    }
+                }
+            }
+
+            for key in invalid_keys {
+                result = dic.common_longest_prefix_search_pair(key, 0, 0);
+                if result.value == -1 {
+                    assert_eq!(result.length, 0);
+                } else {
+                    assert!(result.length < key.len());
+                }
+            }
+        },
+        Err(what) => panic!("{}", what),
+    }
+}
+
+#[test]
 fn tarverse() {
     let data = TestData::new();
     let TestData { dic, invalid_keys, keys, lengths, .. } = &data;

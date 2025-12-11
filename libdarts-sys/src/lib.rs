@@ -165,6 +165,20 @@ extern "C" {
         node_pos: size_t,
     ) -> size_t;
 
+    pub fn darts_common_longest_prefix_search(
+        darts: DartsT,
+        key: *const DartsKeyType,
+        length: size_t,
+        node_pos: size_t,
+    ) -> DartsValueType;
+
+    pub fn darts_common_longest_prefix_search_pair(
+        darts: DartsT,
+        key: *const DartsKeyType,
+        length: size_t,
+        node_pos: size_t,
+    ) -> DartsResultPairType;
+
     /// In Darts-clone, a dictionary is a deterministic finite-state automaton
     /// (DFA) and this tests transitions on the DFA. The initial state is
     /// `node_pos` and the function chooses transitions labeled `key[key_pos]`,

@@ -147,6 +147,29 @@ size_t darts_common_prefix_search(const darts_t darts,
                                       node_pos);
 }
 
+darts_value_type darts_common_longest_prefix_search(const darts_t darts,
+                                                    const darts_key_type* key,
+                                                    size_t length,
+                                                    size_t node_pos) {
+  const DoubleArrayTrie* inst = (const DoubleArrayTrie*) darts;
+  return inst->da->commonLongestPrefixSearch<darts_value_type>(key, length, node_pos);
+}
+
+darts_result_pair_type darts_common_longest_prefix_search_pair(const darts_t darts,
+                                                               const darts_key_type* key,
+                                                               size_t length,
+                                                               size_t node_pos) {
+  const DoubleArrayTrie* inst = (const DoubleArrayTrie*) darts;
+  DoubleArray::result_pair_type result_tmp =
+    inst->da->commonLongestPrefixSearch<DoubleArray::result_pair_type>(key,
+                                                                       length,
+                                                                       node_pos);
+  darts_result_pair_type result;
+  result.value = result_tmp.value;
+  result.length = result_tmp.length;
+  return result;
+}
+
 darts_value_type darts_traverse(const darts_t darts,
                                 const darts_key_type* key,
                                 size_t* node_pos,
