@@ -1,5 +1,7 @@
 use darts::{DoubleArrayTrie, ResultPairType};
+use once_cell::sync::Lazy;
 use rand::{distributions::Alphanumeric, Rng};
+use serial_test::serial;
 
 use super::*;
 use std::collections::BTreeSet;
@@ -8,8 +10,11 @@ const NUM_VALID_KEYS: usize = 1 << 16;
 const NUM_INVALID_KEYS: usize = 1 << 17;
 const MAX_NUM_RESULTS: usize = 16;
 
+static TEST_DATA: Lazy<TestData> = Lazy::new(|| {
+    TestData::new()
+});
+
 struct TestData {
-    dic: DoubleArrayTrie,
     invalid_keys: BTreeSet<String>,
     keys: Vec<String>,
     lengths: Vec<usize>,
@@ -25,9 +30,7 @@ impl TestData {
         let lengths = Vec::from_iter(valid_keys.iter().map(|key| key.len()));
         let values = Vec::from_iter(valid_keys.iter().enumerate().map(|(i, _)| i as i32));
 
-        let dic = darts::DoubleArrayTrie::new();
-
-        TestData { dic, invalid_keys, keys, lengths, values }
+        TestData { invalid_keys, keys, lengths, values }
     }
 
     fn random_value(&self) -> Vec<i32> {
@@ -39,7 +42,6 @@ impl TestData {
         random
     }
 }
-
 
 
 fn generate_valid_keys(num_keys: usize) -> BTreeSet<String> {
@@ -113,8 +115,10 @@ fn test_dic(dic: &DoubleArrayTrie, keys: &Vec<String>, lengths: &Vec<usize>, val
 }
 
 #[test]
+#[serial]
 fn build_with_keys() {
-    let TestData { dic, invalid_keys, keys, lengths, values } = TestData::new();
+    let dic = darts::DoubleArrayTrie::new();
+    let TestData { invalid_keys, keys, lengths, values } = &(*TEST_DATA);
 
     match dic.build(keys.len(), &keys, None, None, None) {
         Ok(_) => test_dic(&dic, &keys, &lengths, &values, &invalid_keys),
@@ -123,8 +127,10 @@ fn build_with_keys() {
 }
 
 #[test]
+#[serial]
 fn build_with_keys_and_lengths() {
-    let TestData { dic, invalid_keys, keys, lengths, values } = TestData::new();
+    let dic = darts::DoubleArrayTrie::new();
+    let TestData { invalid_keys, keys, lengths, values } = &(*TEST_DATA);
 
     match dic.build(keys.len(), &keys, Some(&lengths), None, None) {
         Ok(_) => test_dic(&dic, &keys, &lengths, &values, &invalid_keys),
@@ -133,8 +139,10 @@ fn build_with_keys_and_lengths() {
 }
 
 #[test]
+#[serial]
 fn build_with_keys_lengths_and_values() {
-    let TestData { dic, invalid_keys, keys, lengths, values } = TestData::new();
+    let dic = darts::DoubleArrayTrie::new();
+    let TestData { invalid_keys, keys, lengths, values } = &(*TEST_DATA);
 
     match dic.build(keys.len(), &keys, Some(&lengths), Some(&values), None) {
         Ok(_) => test_dic(&dic, &keys, &lengths, &values, &invalid_keys),
@@ -143,10 +151,11 @@ fn build_with_keys_lengths_and_values() {
 }
 
 #[test]
+#[serial]
 fn build_with_keys_lengths_and_random_values() {
-    let data = TestData::new();
-    let TestData { dic, invalid_keys, keys, lengths, .. } = &data;
-    let random = data.random_value();
+    let dic = darts::DoubleArrayTrie::new();
+    let TestData { invalid_keys, keys, lengths, .. } = &(*TEST_DATA);
+    let random = TEST_DATA.random_value();
 
     match dic.build(keys.len(), &keys, Some(&lengths), Some(&random), None) {
         Ok(_) => test_dic(&dic, &keys, &lengths, &random, &invalid_keys),
@@ -155,10 +164,11 @@ fn build_with_keys_lengths_and_random_values() {
 }
 
 #[test]
+#[serial]
 fn save_and_open() {
-    let data = TestData::new();
-    let TestData { dic, invalid_keys, keys, lengths, .. } = &data;
-    let random = data.random_value();
+    let dic = darts::DoubleArrayTrie::new();
+    let TestData { invalid_keys, keys, lengths, .. } = &(*TEST_DATA);
+    let random = TEST_DATA.random_value();
 
     let dic_copy = DoubleArrayTrie::new();
     match dic.build(keys.len(), &keys, Some(&lengths), Some(&random), None) {
@@ -174,10 +184,11 @@ fn save_and_open() {
 }
 
 #[test]
+#[serial]
 fn set_array_with_array() {
-    let data = TestData::new();
-    let TestData { dic, invalid_keys, keys, lengths, .. } = &data;
-    let random = data.random_value();
+    let dic = darts::DoubleArrayTrie::new();
+    let TestData { invalid_keys, keys, lengths, .. } = &(*TEST_DATA);
+    let random = TEST_DATA.random_value();
 
     let mut dic_copy = DoubleArrayTrie::new();
     match dic.build(keys.len(), &keys, Some(&lengths), Some(&random), None) {
@@ -194,10 +205,11 @@ fn set_array_with_array() {
 }
 
 #[test]
+#[serial]
 fn set_array_with_array_and_size() {
-    let data = TestData::new();
-    let TestData { dic, invalid_keys, keys, lengths, .. } = &data;
-    let random = data.random_value();
+    let dic = darts::DoubleArrayTrie::new();
+    let TestData { invalid_keys, keys, lengths, .. } = &(*TEST_DATA);
+    let random = TEST_DATA.random_value();
 
     let mut dic_copy = DoubleArrayTrie::new();
     match dic.build(keys.len(), &keys, Some(&lengths), Some(&random), None) {
@@ -214,10 +226,11 @@ fn set_array_with_array_and_size() {
 }
 
 #[test]
+#[serial]
 fn common_prefix_search() {
-    let data = TestData::new();
-    let TestData { dic, invalid_keys, keys, lengths, .. } = &data;
-    let random = data.random_value();
+    let dic = darts::DoubleArrayTrie::new();
+    let TestData { invalid_keys, keys, lengths, .. } = &(*TEST_DATA);
+    let random = TEST_DATA.random_value();
 
     match dic.build(keys.len(), &keys, Some(&lengths), Some(&random), None) {
         Ok(_) => {
@@ -259,10 +272,11 @@ fn common_prefix_search() {
 }
 
 #[test]
+#[serial]
 fn common_longest_prefix_search() {
-    let data = TestData::new();
-    let TestData { dic, invalid_keys, keys, lengths, .. } = &data;
-    let random = data.random_value();
+    let dic = darts::DoubleArrayTrie::new();
+    let TestData { invalid_keys, keys, lengths, .. } = &(*TEST_DATA);
+    let random = TEST_DATA.random_value();
 
     match dic.build(keys.len(), &keys, Some(&lengths), Some(&random), None) {
         Ok(_) => {
@@ -314,10 +328,11 @@ fn common_longest_prefix_search() {
 }
 
 #[test]
+#[serial]
 fn tarverse() {
-    let data = TestData::new();
-    let TestData { dic, invalid_keys, keys, lengths, .. } = &data;
-    let random = data.random_value();
+    let dic = darts::DoubleArrayTrie::new();
+    let TestData { invalid_keys, keys, lengths, .. } = &(*TEST_DATA);
+    let random = TEST_DATA.random_value();
 
     match dic.build(keys.len(), &keys, Some(&lengths), Some(&random), None) {
         Ok(_) => {
