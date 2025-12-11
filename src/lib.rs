@@ -4,7 +4,7 @@
 //！
 //! ```toml
 //! [dependencies]
-//! darts-clone-rs = "0.1.0"
+//! darts-clone-rs = "0.2.0"
 //! ```
 //!
 //! # Examples
