@@ -3,13 +3,16 @@ name = "libdarts-sys"
 version = "0.1.2"
 edition = "2021"
 links = "darts"
-description = "Low level native binding to libdarts library"
+description = "Low level native binding to darts-clone"
 license = "BSD-3-Clause"
 authors = ["WhiredPlanck <whiredplanck[at]outlook.com>"]
 repository = "https://github.com/WhiredPlanck/darts-clone-rs"
 documentation = "https://docs.rs/libdarts-sys"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+path = "src/lib.rs"
 
 [dependencies]
 libc = "0.2"

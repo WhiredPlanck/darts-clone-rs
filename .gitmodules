@@ -1,3 +1,6 @@
 [submodule "libdarts"]
 	path = libdarts-sys/libdarts
 	url = https://github.com/BYVoid/libdarts
+[submodule "libdarts-sys/darts-clone"]
+	path = libdarts-sys/darts-clone
+	url = https://github.com/s-yata/darts-clone.git

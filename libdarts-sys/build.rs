@@ -7,8 +7,9 @@ fn main() {
 
     let mut build = cc::Build::new();
     build
-        .files(["libdarts/src/darts.cc"])
-        .include("libdarts/src")
+        .files(["src/libdarts.cpp"])
+        .include("src")
+        .include("darts-clone/include")
         .define("VERSION", "0.3.2")
         .define("PACKAGE_NAME", "libdarts")
         .cpp(true);
