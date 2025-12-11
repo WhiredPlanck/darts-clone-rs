@@ -44,13 +44,13 @@ impl DoubleArrayTrie {
         }
     }
 
-    /// Calls [`Self::clear`] in order to free memory allocated to the
+    /// Calls [`clear`] in order to free memory allocated to the
     /// old array and then sets a new array. This function is useful to set a memory-
     /// mapped array.
     ///
     /// It can also set the size of the new array but the size is not
     /// used in search methods. So it works well even if the size is 0 or omitted.
-    /// Remember that [`Self::size`] and [`Self::total_size`] returns 0 in such a case.
+    /// Remember that [`size`] and [`total_size`] returns 0 in such a case.
     pub fn set_array(&mut self, array: &Array, size: usize) {
         unsafe {
             raw::darts_set_array(self.darts_t, array.array, size);
@@ -82,7 +82,7 @@ impl DoubleArrayTrie {
     }
 
     /// Returns the number of bytes allocated to the array of units.
-    /// It can be 0 if [`Self::set_array`] is used.
+    /// It can be 0 if [`set_array`] is used.
     pub fn total_size(&self) -> usize {
         unsafe { raw::darts_total_size(self.darts_t) }
     }
@@ -218,10 +218,10 @@ impl DoubleArrayTrie {
     ///
     /// Note that if `length` is 0, `key` is handled as a string.
     /// `node_pos` specifies the start position of matching. This argument enables
-    /// the combination of exact_match_search and [`Self::traverse`]. For example, if you
-    /// want to test "xyzA", "xyzBC", and "xyzDE", you can use [`Self::traverse`] to get
+    /// the combination of [`exact_match_search`] and [`traverse`]. For example, if you
+    /// want to test "xyzA", "xyzBC", and "xyzDE", you can use [`traverse`] to get
     /// the node position corresponding to "xyz" and then you can use
-    /// exact_match_search to test "A", "BC", and "DE" from that position.
+    /// [`exact_match_search`] to test "A", "BC", and "DE" from that position.
     ///
     /// Note that the length of `result` indicates the length from the `node_pos`.
     /// In the above example, the lengths are { 1, 2, 2 }, not { 4, 5, 5 }.
@@ -230,7 +230,7 @@ impl DoubleArrayTrie {
         unsafe { raw::darts_exact_match_search(self.darts_t, c_key.as_ptr(), length, node_pos) }
     }
 
-    /// Returns a [`ResultPairType`] instead.
+    /// [`exact_match_search`] but returns a [`ResultPairType`] instead.
     pub fn exact_match_search_pair(
         &self,
         key: &str,
@@ -248,14 +248,14 @@ impl DoubleArrayTrie {
         }
     }
 
-    /// Searches for keys which match a prefix of the
-    /// given string. If `length` is 0, `key` is handled as a string.
+    /// Searches for keys which match a prefix of the given string.
+    /// If `length` is 0, `key` is handled as a string.
     /// The values and the lengths of at most `max_num_results` matched keys are
     /// stored and will be returned.
     /// Note that the length of return value can be larger than `max_num_results` if
     /// there are more than `max_num_results` matches. If you want to get all the
     /// results, allocate more spaces and call this function again.
-    /// `node_pos` works as well as in [`Self::exact_match_search`].
+    /// `node_pos` works as well as in [`exact_match_search`].
     pub fn common_prefix_search(
         &self,
         key: &str,
