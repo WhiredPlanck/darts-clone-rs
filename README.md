@@ -6,7 +6,7 @@ Rust binding of [Darts-clone](https://github.com/s-yata/darts-clone) - a clone o
 
 ```toml
 [dependencies]
-darts-clone-rs = "0.1.0"
+darts-clone-rs = "0.2"
 ```
 
 ## Example
@@ -15,48 +15,74 @@ darts-clone-rs = "0.1.0"
 
 ```rust
 use darts::DartsArrayTrie;
-...
+
 let dic = DartsArrayTrie::new();
-let keys: Vec<String> = ... // get keys somehow
-let values: Vec<usize> = ... // get values somehow
-let lengths: Vec<i32> = ... // get lengths somehow
+let keys: Vec<String> = todo!() // get keys somehow
+let values: Vec<usize> = todo!() // get values somehow
+let lengths: Vec<i32> = todo!() // get lengths somehow
 
 let result = dic.build(keys.len, &keys, None /* Some(&values) */, None /* Some(&lengths) */, None);
 assert_eq!(Ok(()), result);
-...
 ```
 
 ### Save and open
 
 ```rust
 use darts::DartsArrayTrie;
-...
+
 let dic = DartsArrayTrie::new();
 // build ...
 let dic_copy = DartsArrayTrie::new();
 assert_eq!(Ok(), dic.save("path/to/dict", "wb", 0));
 assert_eq!(Ok(), dic_copy.open("path/to/dict", "rb", 0, 0));
-...
 ```
 
 ### Search
 
+#### Exact match search
 ```rust
 use darts::DartsArrayTrie;
-...
+
+let dic = DartArrayTrie::new();
+// build ...
+let value = dic.extra_match_search(key, 0, 0);
+assert_eq!(value, /* expected value */);
+
+let result = dic.extra_match_search_pair(key, 0, 0);
+assert_eq!(result.value, /* expected value */);
+assert_eq!(result.length, /* expected length */);
+```
+
+#### Common prefix search
+```rust
+use darts::DartsArrayTrie;
+
 const MAX_RESULT_NUM: usize = 16;
 let dic = DartsArrayTrie::new();
 // build ...
-let result = dic.common_prefix_search(key, MAX_RESULT_NUM, 0, 0);
-assert_eq!(/* prefixes */, result);
-...
+let results = dic.common_prefix_search(key, MAX_RESULT_NUM, 0, 0);
+assert_eq!(results, /* expected results */);
+```
+
+#### Common longest prefix search
+```rust
+use darts::DartsArrayTrie;
+
+let dic = DartArrayTrie::new();
+// build ...
+let value = dic.common_longest_prefix_search(key, 0, 0);
+assert_eq!(value, /* expected value */);
+
+let result = dic.common_longest_prefix_search_pair(key, 0, 0);
+assert_eq!(result.value, /* expected value */);
+assert_eq!(result.length, /* expected length */);
 ```
 
 ### Traverse
 
 ```rust
 use darts::DartsArrayTrie;
-...
+
 let dic = DartsArrayTrie::new();
 // build ...
 let mut id = 0usize;
@@ -65,5 +91,4 @@ for i in 0..key.len() {
     let result = dic.traverse(key, &mut id, &mut key_pos, i + 1);
     assert_ne!(result, -2);
 }
-...
 ```

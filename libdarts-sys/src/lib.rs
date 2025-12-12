@@ -140,7 +140,7 @@ extern "C" {
         node_pos: size_t,
     ) -> DartsValueType;
 
-    /// Returns a [`DartsResultPairType`] instead.
+    /// [`darts_exact_match_search`] but returns a [`DartsResultPairType`] instead.
     pub fn darts_exact_match_search_pair(
         darts: DartsT,
         key: *const DartsKeyType,
@@ -165,6 +165,11 @@ extern "C" {
         node_pos: size_t,
     ) -> size_t;
 
+    /// Searches for the longest key which matches a prefix of the given string,
+    /// and if it exists, its value and length are set to `result`. Otherwise,
+    /// the value and the length of `result` are set to -1 and 0 respectively.
+    /// Note that if `length` is 0, `key` is handled as a zero-terminated string.
+    /// `node_pos` works as well as in [`darts_exact_match_search`].
     pub fn darts_common_longest_prefix_search(
         darts: DartsT,
         key: *const DartsKeyType,
@@ -172,6 +177,7 @@ extern "C" {
         node_pos: size_t,
     ) -> DartsValueType;
 
+    /// [`darts_common_longest_prefix_search`] but returns a [`DartsResultPairType`] instead.
     pub fn darts_common_longest_prefix_search_pair(
         darts: DartsT,
         key: *const DartsKeyType,

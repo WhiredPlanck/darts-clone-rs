@@ -4,7 +4,7 @@
 //！
 //! ```toml
 //! [dependencies]
-//! darts-clone-rs = "0.2.0"
+//! darts-clone-rs = "0.2"
 //! ```
 //!
 //! # Examples
@@ -38,14 +38,43 @@
 //!
 //! ## Search
 //!
+//! #### Exact match search
+//! ```ignore
+//! use darts::DartsArrayTrie;
+//!
+//! let dic = DartArrayTrie::new();
+//! // build ...
+//! let value = dic.extra_match_search(key, 0, 0);
+//! assert_eq!(value, /* expected value */);
+//!
+//! let result = dic.extra_match_search_pair(key, 0, 0);
+//! assert_eq!(result.value, /* expected value */);
+//! assert_eq!(result.length, /* expected length */);
+//! ```
+//!
+//! #### Common prefix search
 //! ```ignore
 //! use darts::DartsArrayTrie;
 //!
 //! const MAX_RESULT_NUM: usize = 16;
 //! let dic = DartsArrayTrie::new();
 //! // build ...
-//! let result = dic.common_prefix_search(key, MAX_RESULT_NUM, 0, 0);
-//! assert_eq!(/* prefixes */, result);
+//! let results = dic.common_prefix_search(key, MAX_RESULT_NUM, 0, 0);
+//! assert_eq!(results, /* expected results */);
+//! ```
+//!
+//! #### Common longest prefix search
+//! ```ignore
+//! use darts::DartsArrayTrie;
+//!
+//! let dic = DartArrayTrie::new();
+//! // build ...
+//! let value = dic.common_longest_prefix_search(key, 0, 0);
+//! assert_eq!(value, /* expected value */);
+//!
+//! let result = dic.common_longest_prefix_search_pair(key, 0, 0);
+//! assert_eq!(result.value, /* expected value */);
+//! assert_eq!(result.length, /* expected length */);
 //! ```
 //!
 //! ## Traverse

@@ -44,13 +44,14 @@ impl DoubleArrayTrie {
         }
     }
 
-    /// Calls [`clear`] in order to free memory allocated to the
+    /// Calls [`DoubleArrayTrie::clear`] in order to free memory allocated to the
     /// old array and then sets a new array. This function is useful to set a memory-
     /// mapped array.
     ///
     /// It can also set the size of the new array but the size is not
     /// used in search methods. So it works well even if the size is 0 or omitted.
-    /// Remember that [`size`] and [`total_size`] returns 0 in such a case.
+    /// Remember that [`DoubleArrayTrie::size`] and [`DoubleArrayTrie::total_size`]
+    /// returns 0 in such a case.
     pub fn set_array(&mut self, array: &Array, size: usize) {
         unsafe {
             raw::darts_set_array(self.darts_t, array.array, size);
@@ -76,13 +77,13 @@ impl DoubleArrayTrie {
         unsafe { raw::darts_unit_size(self.darts_t) }
     }
 
-    /// Returns the number of units. It can be 0 if [`Self::set_array`] is used.
+    /// Returns the number of units. It can be 0 if [`DoubleArrayTrie::set_array`] is used.
     pub fn size(&self) -> usize {
         unsafe { raw::darts_size(self.darts_t) }
     }
 
     /// Returns the number of bytes allocated to the array of units.
-    /// It can be 0 if [`set_array`] is used.
+    /// It can be 0 if [`DoubleArrayTrie::set_array`] is used.
     pub fn total_size(&self) -> usize {
         unsafe { raw::darts_total_size(self.darts_t) }
     }
@@ -212,16 +213,18 @@ impl DoubleArrayTrie {
         }
     }
 
-    /// Tests whether the given key exists or not, and
-    /// if it exists, its value and length are returned. Otherwise, the
-    /// value and the length of return value are set to -1 and 0 respectively.
+    /// Tests whether the given key exists or not, and if it exists,
+    /// its value and length are returned. Otherwise, the value and 
+    /// the length of return value are set to -1 and 0 respectively.
     ///
-    /// Note that if `length` is 0, `key` is handled as a string.
-    /// `node_pos` specifies the start position of matching. This argument enables
-    /// the combination of [`exact_match_search`] and [`traverse`]. For example, if you
-    /// want to test "xyzA", "xyzBC", and "xyzDE", you can use [`traverse`] to get
-    /// the node position corresponding to "xyz" and then you can use
-    /// [`exact_match_search`] to test "A", "BC", and "DE" from that position.
+    /// Note that if `length` is 0, `key` is handled as a string. `node_pos` 
+    /// specifies the start position of matching. This argument enable the 
+    /// combination of [`DoubleArrayTrie::exact_match_search`] and
+    /// [`DoubleArrayTrie::traverse`]. For example, if you want to test "xyzA",
+    /// "xyzBC", and "xyzDE", you can use [`DoubleArrayTrie::traverse`] to 
+    /// get the node position corresponding to "xyz" and then you can
+    /// use [`DoubleArrayTrie::exact_match_search`] to test "A", "BC",
+    /// and "DE" from that position.
     ///
     /// Note that the length of `result` indicates the length from the `node_pos`.
     /// In the above example, the lengths are { 1, 2, 2 }, not { 4, 5, 5 }.
@@ -230,7 +233,7 @@ impl DoubleArrayTrie {
         unsafe { raw::darts_exact_match_search(self.darts_t, c_key.as_ptr(), length, node_pos) }
     }
 
-    /// [`exact_match_search`] but returns a [`ResultPairType`] instead.
+    /// [`DoubleArrayTrie::exact_match_search`] but returns a [`ResultPairType`] instead.
     pub fn exact_match_search_pair(
         &self,
         key: &str,
@@ -255,7 +258,7 @@ impl DoubleArrayTrie {
     /// Note that the length of return value can be larger than `max_num_results` if
     /// there are more than `max_num_results` matches. If you want to get all the
     /// results, allocate more spaces and call this function again.
-    /// `node_pos` works as well as in [`exact_match_search`].
+    /// `node_pos` works as well as in [`DoubleArrayTrie::exact_match_search`].
     pub fn common_prefix_search(
         &self,
         key: &str,
@@ -290,7 +293,7 @@ impl DoubleArrayTrie {
     /// and if it exists, its value and length are set to `result`. Otherwise, 
     /// the value and the length of `result` are set to -1 and 0 respectively.
     /// Note that if `length` is 0, `key` is handled as a zero-terminated string.
-    /// `node_pos` works as well as in [`exact_match_search`].
+    /// `node_pos` works as well as in [`DoubleArrayTrie::exact_match_search`].
     pub fn common_longest_prefix_search(
         &self,
         key: &str,
@@ -308,7 +311,7 @@ impl DoubleArrayTrie {
         }
     }
 
-    /// [`common_longest_prefix_search`] but returns a [`ResultPairType`] instead.
+    /// [`DoubleArrayTrie::common_longest_prefix_search`] but returns a [`ResultPairType`] instead.
     pub fn common_longest_prefix_search_pair(
         &self,
         key: &str,
