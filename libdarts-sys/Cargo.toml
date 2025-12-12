@@ -1,6 +1,6 @@
 [package]
 name = "libdarts-sys"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 links = "darts"
 description = "Low level native binding to darts-clone"
